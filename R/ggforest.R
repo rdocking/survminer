@@ -9,6 +9,7 @@
 #' @param fontsize relative size of annotations in the plot. Default value: 0.7.
 #' @param refLabel label for reference levels of factor variables.
 #' @param noDigits number of digits for estimates and p-values in the plot.
+#' @param globalStats whether or not to print global statistics
 #'
 #' @return returns a ggplot2 object (invisibly)
 #'
@@ -40,7 +41,8 @@
 
 ggforest <- function(model, data = NULL,
   main = "Hazard ratio", cpositions=c(0.02, 0.22, 0.4),
-  fontsize = 0.7, refLabel = "reference", noDigits=2) {
+  fontsize = 0.7, refLabel = "reference", noDigits=2,
+  globalStats = TRUE) {
   conf.high <- conf.low <- estimate <- NULL
   stopifnot(class(model) == "coxph")
 
@@ -166,12 +168,19 @@ ggforest <- function(model, data = NULL,
       vjust = 1.1,  fontface = "italic") +
     annotate(geom = "text", x = x_annotate, y = exp(y_stars),
       label = toShowExpClean$stars, size = annot_size_mm,
-      hjust = -0.2,  fontface = "italic") +
-    annotate(geom = "text", x = 0.5, y = exp(y_variable),
-      label = paste0("# Events: ", gmodel$nevent, "; Global p-value (Log-Rank): ",
-        format.pval(gmodel$p.value.log, eps = ".001"), " \nAIC: ", round(gmodel$AIC,2),
-        "; Concordance Index: ", round(gmodel$concordance,2)),
-      size = annot_size_mm, hjust = 0, vjust = 1.2,  fontface = "italic")
+      hjust = -0.2,  fontface = "italic")
+
+  if (globalStats) {
+    p <- p + annotate(geom = "text", x = 0.5, y = exp(y_variable),
+                      label = paste0("# Events: ", gmodel$nevent,
+                                     "; Global p-value (Log-Rank): ",
+                                     format.pval(gmodel$p.value.log, eps = ".001"),
+                                     " \nAIC: ", round(gmodel$AIC,2),
+                                     "; Concordance Index: ",
+                                     round(gmodel$concordance,2)),
+                      size = annot_size_mm, hjust = 0, vjust = 1.2,  fontface = "italic")
+  }
+
   # switch off clipping for p-vals, bottom annotation:
   gt <- ggplot_gtable(ggplot_build(p))
   gt$layout$clip[gt$layout$name == "panel"] <- "off"

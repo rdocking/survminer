@@ -6,7 +6,7 @@
 \usage{
 ggforest(model, data = NULL, main = "Hazard ratio",
   cpositions = c(0.02, 0.22, 0.4), fontsize = 0.7,
-  refLabel = "reference", noDigits = 2)
+  refLabel = "reference", noDigits = 2, globalStats = TRUE)
 }
 \arguments{
 \item{model}{an object of class coxph.}
@@ -23,6 +23,8 @@ will be extracted from 'fit' object.}
 \item{refLabel}{label for reference levels of factor variables.}
 
 \item{noDigits}{number of digits for estimates and p-values in the plot.}
+
+\item{globalStats}{whether or not to print global statistics}
 }
 \value{
 returns a ggplot2 object (invisibly)
